@@ -84,7 +84,7 @@ const modes = [
     bg: "bg-orange-500/10 border-orange-500/40",
   },
   {
-    label: "Solve Assignment",
+    label: "Solve Exam/Assignment",
     icon: GraduationCap,
     id: "assignment",
     color: "text-rose-400",

@@ -29,7 +29,7 @@ export default function DashboardPage() {
           summary: "Summarize",
           code: "Explain Code",
           practice: "Practice Problems",
-          assignment: "Solve Assignment",
+          assignment: "Solve Exam/Assignment",
           slides: "Lecture Slides",
         };
         setSelectedMode(modeLabels[data.generation.mode] || "Generate Notes");

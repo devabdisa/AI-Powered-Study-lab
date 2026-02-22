@@ -54,7 +54,7 @@ const modeMap: Record<string, string> = {
   Summarize: "summary",
   "Explain Code": "code",
   "Practice Problems": "practice",
-  "Solve Assignment": "assignment",
+  "Solve Exam/Assignment": "assignment",
   "Lecture Slides": "slides",
 };
 
@@ -68,8 +68,8 @@ const modeDescriptions: Record<string, string> = {
   Summarize: "Get a concise, exam-ready summary in minutes ⚡",
   "Explain Code": "Deep-dive explanation for code or programming concepts 💻",
   "Practice Problems": "Hands-on practice problems with full solutions 🏋️",
-  "Solve Assignment":
-    "High-quality, meticulously formatted assignment solutions 🎓",
+  "Solve Exam/Assignment":
+    "High-quality, meticulously formatted exam & assignment solutions 🎓",
   "Lecture Slides":
     "Generate beautiful lecture slides — beginner-friendly, clear and visual 🎨",
 };
@@ -81,7 +81,7 @@ const modeGradients: Record<string, string> = {
   Summarize: "from-emerald-500/20 to-green-500/10",
   "Explain Code": "from-pink-500/20 to-rose-500/10",
   "Practice Problems": "from-orange-500/20 to-amber-500/10",
-  "Solve Assignment": "from-rose-500/20 to-red-500/10",
+  "Solve Exam/Assignment": "from-rose-500/20 to-red-500/10",
   "Lecture Slides": "from-sky-500/20 to-blue-500/10",
 };
 
@@ -92,7 +92,9 @@ const modeIcons: Record<string, React.ReactNode> = {
   Summarize: <Sparkles size={20} className="text-emerald-400" />,
   "Explain Code": <Code2 size={20} className="text-pink-400" />,
   "Practice Problems": <Dumbbell size={20} className="text-orange-400" />,
-  "Solve Assignment": <GraduationCap size={20} className="text-rose-400" />,
+  "Solve Exam/Assignment": (
+    <GraduationCap size={20} className="text-rose-400" />
+  ),
   "Lecture Slides": <Presentation size={20} className="text-sky-400" />,
 };
 
@@ -103,7 +105,7 @@ const modeBorderColors: Record<string, string> = {
   Summarize: "border-emerald-500/30 hover:border-emerald-400/50",
   "Explain Code": "border-pink-500/30 hover:border-pink-400/50",
   "Practice Problems": "border-orange-500/30 hover:border-orange-400/50",
-  "Solve Assignment": "border-rose-500/30 hover:border-rose-400/50",
+  "Solve Exam/Assignment": "border-rose-500/30 hover:border-rose-400/50",
   "Lecture Slides": "border-sky-500/30 hover:border-sky-400/50",
 };
 
@@ -120,7 +122,7 @@ const modeButtonColors: Record<string, string> = {
     "from-pink-500 to-rose-600 hover:from-pink-400 hover:to-rose-500 shadow-pink-500/25",
   "Practice Problems":
     "from-orange-500 to-amber-600 hover:from-orange-400 hover:to-amber-500 shadow-orange-500/25",
-  "Solve Assignment":
+  "Solve Exam/Assignment":
     "from-rose-500 to-red-600 hover:from-rose-400 hover:to-red-500 shadow-rose-500/25",
   "Lecture Slides":
     "from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 shadow-sky-500/25",
