@@ -7,8 +7,8 @@ const _geist = Geist({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: 'AI Study Lab - Dashboard',
-  description: 'Modern AI-powered study lab dashboard for notes, exams, quizzes, and more',
+  title: 'Ethio Panda Tech Study Lab',
+  description: 'Modern Ethio Panda study lab dashboard for notes, exams, quizzes, and more',
   generator: 'v0.app',
   icons: {
     icon: [

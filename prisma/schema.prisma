@@ -1,0 +1,22 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Generation {
+  id         String   @id @default(cuid())
+  mode       String
+  title      String?
+  course     String?
+  year       String?
+  isSaved    Boolean  @default(false)
+  inputText  String
+  output     String
+  difficulty String?  @default("medium")
+  fileUsed   Boolean  @default(false)
+  fileName   String?
+  createdAt  DateTime @default(now())
+}
