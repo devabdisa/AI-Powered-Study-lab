@@ -861,7 +861,7 @@ export default function MainArea({
             ) : (
               <>
                 <Zap size={16} />
-                Generate with AI
+                Generate with Panda
               </>
             )}
           </button>
@@ -1246,7 +1246,7 @@ export default function MainArea({
                     Upload a PDF or paste your notes on the left, then hit
                     <span className="text-cyan-400 font-medium">
                       {" "}
-                      Generate with AI
+                      Generate with Panda
                     </span>
                   </p>
                   <div className="grid grid-cols-2 gap-2 text-left">
