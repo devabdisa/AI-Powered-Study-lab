@@ -176,9 +176,11 @@ export default function Sidebar({
           </div>
           <div>
             <h1 className="text-base font-bold text-white leading-tight">
-              Ethio Panda Tech Study Lab
+              Ethio Panda Tech
             </h1>
-            <p className="text-[10px] text-slate-500">Powered by AI</p>
+            <p className="text-[10px] text-slate-500">
+              Study Lab • @ethiopandatech
+            </p>
           </div>
         </div>
       </div>
