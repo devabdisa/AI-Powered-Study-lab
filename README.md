@@ -23,8 +23,6 @@ The **AI Powered Study Lab** is an open-source, brilliant solution intended to r
 
 Whether you need to generate deeply insightful reading notes, simulate a rigorous exam environment, or fully immerse yourself in a distraction-free study session, this is your ultimate hub.
 
-> **Note:** This project does not currently have a live deployment link. It is proudly open-sourced for the community! I will be sharing the source code on LinkedIn so anyone can fork it, configure their own API keys, and run it independently.
-
 ---
 
 ## 🚀 Key Features
