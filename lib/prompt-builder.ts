@@ -25,7 +25,7 @@ Follow these rules strictly:
 4. STRUCTURE: Use headings (##), subheadings (###), bullet points, and bold text.
 5. Use emojis strategically to make the reading experience visual and fun.
 6. For every major concept include:
-   - 🎯 Core Concept (explained like I'm 5 years old)
+   - 🎯 Core Concept
    - 📌 Key Takeaways (short bullet points)
    - 💡 Real-Life Example (something anyone can relate to)
    - ⚠️ Common Rookie Mistake (what to avoid)
