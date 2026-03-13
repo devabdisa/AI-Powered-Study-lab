@@ -1,9 +1,14 @@
-"use client";
-
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { GraduationCap } from "lucide-react";
 
 export default function Footer() {
+  const [year, setYear] = useState<number | null>(null);
+
+  useEffect(() => {
+    setYear(new Date().getFullYear());
+  }, []);
+
   return (
     <footer className="bg-slate-950 py-12 border-t border-slate-800 text-center">
       <div className="container mx-auto px-4 flex flex-col items-center gap-6">
@@ -25,7 +30,7 @@ export default function Footer() {
         </nav>
 
         <p className="text-slate-600 text-xs mt-4">
-          &copy; {new Date().getFullYear()} Study Buddy AI. All rights reserved. 
+          &copy; {year || "2026"} Study Buddy AI. All rights reserved. 
           <br className="md:hidden" /> Developed for universities everywhere.
         </p>
 

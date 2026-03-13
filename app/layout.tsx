@@ -37,7 +37,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className="font-sans antialiased bg-slate-950 text-slate-100">
+      <body className="font-sans antialiased bg-slate-950 text-slate-100" suppressHydrationWarning>
         {children}
         <Analytics />
       </body>

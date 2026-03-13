@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import {
   Accordion,
   AccordionContent,
@@ -35,12 +34,7 @@ export default function FAQ() {
         <div className="grid md:grid-cols-2 gap-16 items-start">
           
           {/* Left Column: Heading and Illustration pattern */}
-          <motion.div 
-            initial={{ opacity: 0, x: -20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            className="sticky top-32"
-          >
+          <div className="sticky top-32">
             <h2 className="text-4xl md:text-5xl font-extrabold text-white mb-6">
               Frequently<br />Asked Questions
             </h2>
@@ -57,14 +51,10 @@ export default function FAQ() {
                 </div>
               ))}
             </div>
-          </motion.div>
+          </div>
 
           {/* Right Column: Accordions */}
-          <motion.div 
-            initial={{ opacity: 0, x: 20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-          >
+          <div>
             <Accordion type="single" collapsible className="w-full">
               {faqs.map((faq, i) => (
                 <AccordionItem 
@@ -81,19 +71,15 @@ export default function FAQ() {
                 </AccordionItem>
               ))}
             </Accordion>
-          </motion.div>
+          </div>
 
         </div>
 
         {/* Floating Support Icon at Bottom */}
         <div className="flex justify-center mt-32">
-          <motion.div 
-            animate={{ y: [0, -10, 0] }}
-            transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
-            className="w-16 h-16 bg-slate-900 border border-slate-800 rounded-3xl flex items-center justify-center shadow-2xl"
-          >
+          <div className="w-16 h-16 bg-slate-900 border border-slate-800 rounded-3xl flex items-center justify-center shadow-2xl animate-bounce">
             <Headphones className="w-8 h-8 text-cyan-400" />
-          </motion.div>
+          </div>
         </div>
       </div>
     </section>
