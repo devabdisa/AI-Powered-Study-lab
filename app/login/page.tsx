@@ -55,9 +55,7 @@ export default function LoginPage() {
             <div className="w-16 h-16 bg-gradient-to-br from-cyan-400 to-violet-500 rounded-2xl flex items-center justify-center shadow-lg shadow-cyan-500/20 mb-4">
               <span className="text-3xl">🐼</span>
             </div>
-            <h1 className="text-2xl font-extrabold text-white">
-              Ethio Panda Tech
-            </h1>
+            <h1 className="text-2xl font-extrabold text-white">Study Buddy</h1>
             <p className="text-slate-500 text-sm mt-1">
               Study Lab — Private Access
             </p>

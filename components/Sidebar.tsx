@@ -176,7 +176,7 @@ export default function Sidebar({
           </div>
           <div>
             <h1 className="text-base font-bold text-white leading-tight">
-              Ethio Panda Tech
+              Study Buddy
             </h1>
             <p className="text-[10px] text-slate-500">
               Study Lab • @ethiopandatech
@@ -399,7 +399,7 @@ export default function Sidebar({
       {/* Footer */}
       <div className="p-3 border-t border-slate-800">
         <div className="text-[10px] text-slate-600 text-center">
-          Ethio Panda Tech Study Lab ✨
+          Study Buddy Study Lab ✨
         </div>
       </div>
     </aside>

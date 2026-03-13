@@ -1,75 +1,20 @@
-"use client";
+import Navbar from "@/components/landing/Navbar";
+import Hero from "@/components/landing/Hero";
 
-import { useState } from "react";
-import Sidebar from "@/components/Sidebar";
-import MainArea from "@/components/MainArea";
-
-export default function DashboardPage() {
-  const [selectedMode, setSelectedMode] = useState<string>("Generate Notes");
-  const [output, setOutput] = useState<string>("");
-  const [currentId, setCurrentId] = useState<string | null>(null);
-  const [details, setDetails] = useState<{
-    title: string | null;
-    course: string | null;
-    year: string | null;
-    isSaved: boolean;
-  }>({ title: null, course: null, year: null, isSaved: false });
-  const [refreshHistory, setRefreshHistory] = useState(0);
-
-  const handleLoadHistory = async (id: string) => {
-    try {
-      const res = await fetch(`/api/history/${id}`);
-      const data = await res.json();
-      if (data.generation) {
-        // Map mode id back to label
-        const modeLabels: Record<string, string> = {
-          notes: "Generate Notes",
-          exam: "Generate Exam",
-          quiz: "Generate Quiz",
-          summary: "Summarize",
-          code: "Explain Code",
-          practice: "Practice Problems",
-          assignment: "Solve Exam/Assignment",
-          slides: "Lecture Slides",
-        };
-        setSelectedMode(modeLabels[data.generation.mode] || "Generate Notes");
-        setOutput(data.generation.output);
-        setCurrentId(data.generation.id);
-        setDetails({
-          title: data.generation.title,
-          course: data.generation.course,
-          year: data.generation.year,
-          isSaved: data.generation.isSaved,
-        });
-      }
-    } catch (e) {
-      console.error("Failed to load history item", e);
-    }
-  };
-
+export default function LandingPage() {
   return (
-    <div className="flex h-screen bg-slate-950 text-slate-100 overflow-hidden">
-      <Sidebar
-        selectedMode={selectedMode}
-        onSelectMode={(mode) => {
-          setSelectedMode(mode);
-          setOutput("");
-          setCurrentId(null);
-          setDetails({ title: null, course: null, year: null, isSaved: false });
-        }}
-        onLoadHistory={handleLoadHistory}
-        refreshTrigger={refreshHistory}
-      />
-      <MainArea
-        selectedMode={selectedMode}
-        output={output}
-        setOutput={setOutput}
-        currentId={currentId}
-        setCurrentId={setCurrentId}
-        details={details}
-        setDetails={setDetails}
-        onSaveSuccess={() => setRefreshHistory((prev) => prev + 1)}
-      />
-    </div>
+    <main className="min-h-screen bg-slate-950 text-white selection:bg-blue-500/30">
+      <Navbar />
+      <Hero />
+      
+      {/* Scrollable sections below */}
+      <div className="space-y-32 pb-20">
+        {/* We will add Features, Pricing, FAQ, etc. here in next steps */}
+        <section id="features" className="container mx-auto px-4 py-20 text-center">
+            <h2 className="text-3xl font-bold mb-4">Powerful Features Coming Soon</h2>
+            <p className="text-slate-400">We are currently building the Bento Grid features section to showcase everything Study Buddy can do.</p>
+        </section>
+      </div>
+    </main>
   );
 }
