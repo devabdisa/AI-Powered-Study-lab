@@ -1,6 +1,10 @@
 import Navbar from "@/components/landing/Navbar";
 import Hero from "@/components/landing/Hero";
 import Features from "@/components/landing/Features";
+import Testimonials from "@/components/landing/Testimonials";
+import Pricing from "@/components/landing/Pricing";
+import FAQ from "@/components/landing/FAQ";
+import Footer from "@/components/landing/Footer";
 
 export default function LandingPage() {
   return (
@@ -8,11 +12,10 @@ export default function LandingPage() {
       <Navbar />
       <Hero />
       <Features />
-      
-      {/* Scrollable sections below */}
-      <div className="space-y-32 pb-20">
-        {/* We will add Testimonials, Pricing, FAQ, etc. here in next steps */}
-      </div>
+      <Testimonials />
+      <Pricing />
+      <FAQ />
+      <Footer />
     </main>
   );
 }
