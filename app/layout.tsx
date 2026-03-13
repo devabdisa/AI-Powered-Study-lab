@@ -9,7 +9,7 @@ const _geistMono = Geist_Mono({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "Study Buddy Study Lab",
   description:
-    "Modern Ethio Panda study lab dashboard for notes, exams, quizzes, and more",
+    "Modern study lab dashboard for notes, exams, quizzes, and more",
   generator: "v0.app",
   icons: {
     icon: [

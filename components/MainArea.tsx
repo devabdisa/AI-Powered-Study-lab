@@ -863,7 +863,7 @@ export default function MainArea({
             ) : (
               <>
                 <Zap size={16} />
-                Generate with Panda
+                Generate with Study Buddy
               </>
             )}
           </button>
