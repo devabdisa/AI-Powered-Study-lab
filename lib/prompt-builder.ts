@@ -9,6 +9,7 @@ export const studyModes = [
   "slides",
   "flashcards",
   "concept_map",
+  "adaptive_learning",
 ] as const;
 
 export type StudyMode = typeof studyModes[number];
@@ -390,6 +391,31 @@ Ensure all major topics are distinctly captured and visually nested.
 
 Content:
 ${content}
+`.trim(),
+
+  adaptive_learning: (content) => `
+${BASE_RULES}
+
+You are an expert, highly adaptive AI tutor. Your first task is to evaluate the provided content and generate a diagnostic quiz to assess the student's baseline knowledge.
+
+Generate exactly 8 diagnostic questions. The questions should cover:
+- Conceptual understanding
+- Practical application
+- Tricky edge cases
+
+Format the questions strictly like this (no answers, just the questions):
+
+**Q1.** [Question text here]
+A) [option]
+B) [option]
+C) [option]
+D) [option]
+
+**Q2.** [Question text here]
+...
+
+Content:
+${content}
 `.trim()
 };
 
@@ -414,6 +440,7 @@ export function getModeTitle(mode: StudyMode): string {
     slides: "Lecture Slides",
     flashcards: "Flashcards",
     concept_map: "Concept Map",
+    adaptive_learning: "Adaptive Tutor",
   };
   return titles[mode] || mode;
 }
@@ -430,6 +457,62 @@ export function getModeEmoji(mode: StudyMode): string {
     slides: "🎨",
     flashcards: "🗂️",
     concept_map: "🗺️",
+    adaptive_learning: "🧠",
   };
   return emojis[mode] || "✨";
+}
+
+export function buildEvaluationPrompt(content: string, userAnswers: { question: string, answer: string }[]): string {
+  return `
+You are an expert AI tutor evaluating a student's quiz answers.
+
+Original Content Material:
+${content}
+
+Student's Submitted Answers:
+${JSON.stringify(userAnswers, null, 2)}
+
+Your task is to grade the student's answers based ONLY on the original content material.
+Return a RAW JSON object exactly matching this schema (do NOT wrap it in markdown block quotes like \`\`\`json, just return the raw curly braces):
+{
+  "score": <number out of total questions>,
+  "weak_topics": ["<topic 1>", "<topic 2>"],
+  "explanations": [
+    {
+      "topic": "<topic 1>",
+      "explanation": "<why they got it wrong and correct explanation>"
+    }
+  ]
+}
+`.trim();
+}
+
+export function buildReinforcementPrompt(weakTopics: string[]): string {
+  return `
+You are an expert AI tutor. A student has just taken a diagnostic quiz and struggled with the following specific topics:
+${JSON.stringify(weakTopics)}
+
+Your task is to generate a targeted reinforcement lesson.
+
+Structure the output exactly like this:
+
+## 🧭 Let's Review
+[Provide a very brief, simplified 2-3 sentence explanation for each weak topic that clears up common misunderstandings.]
+
+## 🏋️ Targeted Practice
+Generate exactly 3 new multiple choice questions specifically focusing ONLY on these weak topics to test if they have improved.
+
+**Q1.** [Question text]
+A) [option]
+B) [option]
+C) [option]
+D) [option]
+
+[Include Q2 and Q3]
+
+<details>
+<summary>👀 <b>View Answers</b></summary>
+[Include the answers and explanations here]
+</details>
+`.trim();
 }
