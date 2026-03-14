@@ -28,28 +28,19 @@ export default function Testimonials() {
   return (
     <section id="testimonials" className="py-24 bg-slate-950 relative">
       <div className="container mx-auto px-4 max-w-6xl">
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center mb-16"
-        >
+        <div className="text-center mb-16">
           <div className="inline-flex items-center gap-2 mb-4">
             <h2 className="text-4xl md:text-5xl font-bold text-white">
               Happy Students, <span className="bg-white text-slate-900 px-3 py-1 rounded-lg ml-2">Higher Grades</span>
             </h2>
           </div>
           <p className="text-slate-400 text-lg">Don't just take our word for it. See what top university students are saying.</p>
-        </motion.div>
+        </div>
 
         <div className="grid md:grid-cols-3 gap-6">
           {testimonials.map((t, i) => (
-            <motion.div
+            <div
               key={i}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.1 }}
               className="bg-slate-900/50 border border-slate-800 rounded-2xl p-8 hover:border-cyan-500/30 transition-colors"
             >
               <div className="flex gap-1 mb-6">
@@ -71,7 +62,7 @@ export default function Testimonials() {
                   <div className="text-cyan-400 text-sm">{t.role}</div>
                 </div>
               </div>
-            </motion.div>
+            </div>
           ))}
         </div>
       </div>

@@ -15,31 +15,14 @@ export default function Pricing() {
       
       <div className="container mx-auto px-4 max-w-5xl">
         <div className="text-center mb-16">
-          <motion.h2 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-4xl md:text-5xl font-extrabold text-white mb-6 tracking-tight"
-          >
+          <h2 className="text-4xl md:text-5xl font-extrabold text-white mb-6 tracking-tight">
             Pricing that Scales with You
-          </motion.h2>
-          <motion.p 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.1 }}
-            className="text-lg text-slate-400 font-medium max-w-2xl mx-auto"
-          >
+          </h2>
+          <p className="text-lg text-slate-400 font-medium max-w-2xl mx-auto">
             Study Buddy is your single smartest investment for college. Start studying for free right now, and upgrade when you're ready to conquer the finals.
-          </motion.p>
+          </p>
           
-          <motion.div 
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.2 }}
-            className="mt-8 flex items-center justify-center gap-4"
-          >
+          <div className="mt-8 flex items-center justify-center gap-4">
             <span className={`text-sm ${!isAnnual ? "text-white font-semibold" : "text-slate-500"}`}>Monthly</span>
             <button 
               onClick={() => setIsAnnual(!isAnnual)}
@@ -52,17 +35,12 @@ export default function Pricing() {
             <span className={`text-sm flex items-center gap-2 ${isAnnual ? "text-white font-semibold" : "text-slate-500"}`}>
               Annually <span className="bg-cyan-500/20 text-cyan-400 text-[10px] px-2 py-0.5 rounded-full uppercase tracking-wider">Save 20%</span>
             </span>
-          </motion.div>
+          </div>
         </div>
 
         <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
           {/* Free Tier */}
-          <motion.div 
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="bg-slate-900 border border-slate-800 rounded-3xl p-8 flex flex-col relative overflow-hidden transition-colors hover:border-slate-700"
-          >
+          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-8 flex flex-col relative overflow-hidden transition-colors hover:border-slate-700">
             <h3 className="text-xl font-bold text-white mb-2">Free Freshman</h3>
             <p className="text-slate-400 text-sm mb-6 h-10">Essential AI tools to get you through your first midterms.</p>
             <div className="mb-8">
@@ -97,16 +75,10 @@ export default function Pricing() {
                 Start for Free
               </Button>
             </Link>
-          </motion.div>
+          </div>
 
           {/* Pro Tier */}
-          <motion.div 
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.2 }}
-            className="bg-slate-900 border border-cyan-500/50 rounded-3xl p-8 flex flex-col relative overflow-hidden shadow-2xl shadow-cyan-900/20"
-          >
+          <div className="bg-slate-900 border border-cyan-500/50 rounded-3xl p-8 flex flex-col relative overflow-hidden shadow-2xl shadow-cyan-900/20">
             <div className="absolute top-0 right-0 bg-cyan-500 text-slate-950 text-xs font-bold px-3 py-1 rounded-bl-lg uppercase tracking-wider">
               Most Popular
             </div>
@@ -140,7 +112,7 @@ export default function Pricing() {
                 Get StudyBuddy Pro
               </Button>
             </Link>
-          </motion.div>
+          </div>
         </div>
       </div>
     </section>

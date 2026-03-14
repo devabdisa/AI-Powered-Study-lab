@@ -70,39 +70,42 @@ After studying this material, the student should be able to:
 * objective 3
 `;
 
-export function buildPrompt(
-  mode: StudyMode,
-  content: string,
-  difficulty: string = "medium",
-): string {
-  switch (mode) {
-    case "notes":
-      return `
+const promptBuilders: Record<StudyMode, (content: string, difficulty?: string) => string> = {
+  notes: (content) => `
+${BASE_RULES}
+
+${LEARNING_OBJECTIVES}
+
+${LENGTH_CONTROL}
+
+${TOPIC_EXTRACTION}
+
 You are a brilliant, highly engaging instructor. Your task is to transform the content below into a set of study notes specifically designed for an absolute beginner who might also be an English learner.
 
 Follow these rules strictly:
-1. NO CONVERSATIONAL FLUFF: Get straight to the point. DO NOT say "Welcome back", "Here are the notes", "Let's dive in", or "Hey there". Start IMMEDIATELY with the actual formatted notes.
-2. VERY SIMPLE ENGLISH: Use simple vocabulary, short sentences, and a warm, conversational tone. Avoid complex jargon (or immediately define it simply if you must use it).
-3. DO NOT SKIP CONCEPTS: Explain everything in the original text, but make it extremely easy to digest.
-4. STRUCTURE: Use headings (##), subheadings (###), bullet points, and bold text.
-5. Use emojis strategically to make the reading experience visual and fun.
-6. For every major concept include:
+1. NO CONVERSATIONAL FLUFF: Get straight to the point.
+2. VERY SIMPLE ENGLISH: Use simple vocabulary and short sentences.
+3. STRUCTURE: Use headings (##), subheadings (###), bullet points, and bold text.
+4. Emojis: Use strategically for a fun visual experience.
+5. For every major concept include:
    - 🎯 Core Concept
-   - 📌 Key Takeaways (short bullet points)
-   - 💡 Real-Life Example (something anyone can relate to)
-   - ⚠️ Common Rookie Mistake (what to avoid)
-   - 🧪 Quick Test (1 simple question to check understanding with answer hidden in a <details><summary>View Answer</summary> tag)
-7. Format everything in proper Markdown. Make it visually beautiful!
+   - 📌 Key Takeaways
+   - 💡 Real-Life Example
+   - ⚠️ Common Rookie Mistake
+   - 🧪 Quick Test (answer hidden in <details><summary>View Answer</summary> tag)
 
 Content to transform:
 ${content}
-      `.trim();
+`.trim(),
 
-    case "exam":
-      return `
+  exam: (content, difficulty) => `
+${BASE_RULES}
+
+${DIFFICULTY_GUIDE}
+
+${TOPIC_EXTRACTION}
+
 You are a university professor creating a comprehensive, professional exam based on the provided material.
-
-Generate a complete exam based on the content below, with distinct question types.
 
 Difficulty level: ${difficulty}
 
@@ -124,21 +127,26 @@ Structure the exam exactly with these sections and formatting:
 - 2 complex questions requiring a deeper explanation or essay (15 marks each).
 
 ## ✅ Answer Key & Explanations
-- At the very bottom of the generated response, wrap the exact answers for all sections inside a hidden collapsible block using HTML tags exactly like this:
+- At the very bottom of the generated response, wrap the exact answers for all sections inside a hidden collapsible block precisely like this:
 
 <details>
 <summary>👀 <b>View Answers & Explanations</b></summary>
 
-[Insert all answers and brief 1-2 sentence explanations here]
+[Insert all answers and brief explanations here]
 
 </details>
 
 Content:
 ${content}
-      `.trim();
+`.trim(),
 
-    case "quiz":
-      return `
+  quiz: (content, difficulty) => `
+${BASE_RULES}
+
+${DIFFICULTY_GUIDE}
+
+${TOPIC_EXTRACTION}
+
 Generate an interactive multiple choice quiz based on the content below.
 
 Difficulty: ${difficulty}
@@ -165,33 +173,39 @@ D) [option]
 
 Make questions that test real understanding, not just memorization.
 Mix easy, medium, and hard questions based on the difficulty level.
-Cover all major topics from the content.
 
 Content:
 ${content}
-      `.trim();
+`.trim(),
 
-    case "summary":
-      return `
+  summary: (content) => `
+${BASE_RULES}
+
+${LEARNING_OBJECTIVES}
+
+${LENGTH_CONTROL}
+
+${TOPIC_EXTRACTION}
+
 Create a concise, exam-ready summary of the content below.
 
 This summary is for last-minute revision before an exam. Make it:
 1. 🎯 Short and punchy — only the most important points
 2. 📋 Well-organized with clear sections
-3. Use bullet points aggressively
-4. Bold every key term
-5. Include a "⚡ Quick Facts" section at the end with 5-10 one-liners
-6. Include a "🔑 Key Formulas / Rules" section if applicable
-7. End with a "🚨 Don't Forget!" section for common exam traps
-
-Keep it scannable — someone should be able to read it in 5 minutes.
+3. Bold every key term
+4. Include a "⚡ Quick Facts" section at the end with 5-10 one-liners
+5. Include a "🔑 Key Formulas / Rules" section if applicable
+6. End with a "🚨 Don't Forget!" section for common exam traps
 
 Content:
 ${content}
-      `.trim();
+`.trim(),
 
-    case "code":
-      return `
+  code: (content) => `
+${BASE_RULES}
+
+${LENGTH_CONTROL}
+
 You are an expert programming tutor. Explain the code or programming concept below in a beginner-friendly way.
 
 For each piece of code or concept:
@@ -224,10 +238,15 @@ Use proper Markdown code blocks with syntax highlighting (e.g., \`\`\`cpp or \`\
 
 Content:
 ${content}
-      `.trim();
+`.trim(),
 
-    case "practice":
-      return `
+  practice: (content, difficulty) => `
+${BASE_RULES}
+
+${DIFFICULTY_GUIDE}
+
+${TOPIC_EXTRACTION}
+
 Generate 5 practical problems based on the content below.
 
 Difficulty: ${difficulty}
@@ -236,7 +255,7 @@ For each problem, use this format:
 
 ---
 
-### 🏋️ Problem [N] — [difficulty tag: Easy/Medium/Hard]
+### 🏋️ Problem [N] — [difficulty tag]
 
 **📋 Problem Statement:**
 [Clear description of what to solve]
@@ -268,10 +287,11 @@ Make problems progressively harder. Focus on deep understanding and application.
 
 Content:
 ${content}
-      `.trim();
+`.trim(),
 
-    case "assignment":
-      return `
+  assignment: (content) => `
+${BASE_RULES}
+
 You are an expert academic assistant and tutor. Your task is to solve the assignment or exam questions provided in the content below.
 
 Rules for completing the assignment/exam:
@@ -289,10 +309,15 @@ Rules for completing the assignment/exam:
 
 Content:
 ${content}
-      `.trim();
+`.trim(),
 
-    case "slides":
-      return `
+  slides: (content) => `
+${BASE_RULES}
+
+${LEARNING_OBJECTIVES}
+
+${LENGTH_CONTROL}
+
 You are a real human lecturer — NOT an AI — creating a tight, engaging slide deck for students who are complete beginners.
 
 Your task: Transform the content below into a series of lecture slides. Each slide should feel like a real instructor wrote it, NOT a ChatGPT template.
@@ -312,47 +337,69 @@ SLIDE TYPES YOU CAN USE:
 - Use **bold** only for key terms (not whole sentences)
 - End with a one-line real-life analogy
 
-2. CODE SLIDE (use this when content involves programming, code, or terminal commands):
+2. CODE SLIDE (use this when content involves programming):
 - Write 1-2 short sentences explaining WHAT the code does in plain English
 - Then include an actual runnable code block using triple backticks with the language name
 - After the code, add a short line-by-line explanation with bullet points
-- Example:
-
-===SLIDE===
-How to Print in Python
-
-This is the very first program every programmer writes. It puts words on the screen.
-
-\`\`\`python
-# Show a message on screen
-print("Hello, World!")
-\`\`\`
-
-- print(...) → shows whatever is inside to the user
-- "Hello, World!" → this is called a string, just some text in quotes
-===SLIDE===
-
-3. ANALOGY SLIDE (optional, 1 per deck):
-- One short paragraph using a real-world comparison
-- Make it memorable and slightly humorous
 
 HUMAN VOICE RULES (critical):
-1. Write like a real teacher, not a robot — casual, direct, warm
-2. NEVER start with "In this presentation we will explore..." or "Welcome to slide 1"
-3. First slide = the actual topic name as a bold opener, then 2-3 lines of what they will learn
-4. Mix bullets with short paragraphs — do not bullet-point everything
-5. Vary sentence length naturally — short punchy lines then a longer explanation
-6. Last slide = "What We Learned Today" — 4 short takeaways max
-7. Minimum 8 slides, maximum 14 slides
-8. If content is code or programming: at LEAST 40% of slides must be CODE SLIDES with real code blocks
+1. Write like a real teacher, not a robot — casual, direct, warm.
+2. NEVER start with "In this presentation we will explore...".
+3. First slide = the actual topic name as a bold opener, then 2-3 lines of what they will learn. (Include the Learning Objectives here).
+4. Mix bullets with short paragraphs.
+5. Vary sentence length naturally.
+6. Last slide = "What We Learned Today" — 4 short takeaways max.
+7. Minimum 8 slides, maximum 14 slides.
+8. If content is code or programming: at LEAST 40% of slides must be CODE SLIDES with real code blocks.
 
 Content to transform into slides:
 ${content}
-      `.trim();
+`.trim(),
 
-    default:
-      return content;
-  }
+  flashcards: (content) => `
+${BASE_RULES}
+
+${TOPIC_EXTRACTION}
+
+Generate exactly 20 flashcards from the provided content to test recall and core understanding.
+
+Format each flashcard exactly like this:
+
+**Front:** [Question or term]
+**Back:** [Answer or definition]
+
+Content:
+${content}
+`.trim(),
+
+  concept_map: (content) => `
+${BASE_RULES}
+
+${TOPIC_EXTRACTION}
+
+Generate a clear hierarchical concept map of the provided content.
+
+Format as a text-based tree structure:
+
+Concept
+├ Subconcept
+├ Subconcept
+└ Example
+
+Ensure all major topics are distinctly captured and visually nested.
+
+Content:
+${content}
+`.trim()
+};
+
+export function buildPrompt(
+  mode: StudyMode,
+  content: string,
+  difficulty: string = "medium",
+): string {
+  const builder = promptBuilders[mode];
+  return builder ? builder(content, difficulty) : content;
 }
 
 export function getModeTitle(mode: StudyMode): string {
