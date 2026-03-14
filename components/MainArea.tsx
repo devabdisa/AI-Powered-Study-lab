@@ -30,6 +30,7 @@ import {
   MonitorPlay,
 } from "lucide-react";
 import { marked } from "marked";
+import AdaptiveLearningArea from "./AdaptiveLearningArea";
 
 interface MainAreaProps {
   selectedMode: string;
@@ -56,6 +57,9 @@ const modeMap: Record<string, string> = {
   "Practice Problems": "practice",
   "Solve Exam/Assignment": "assignment",
   "Lecture Slides": "slides",
+  "Generate Flashcards": "flashcards",
+  "Concept Map": "concept_map",
+  "Adaptive Tutor": "adaptive_learning",
 };
 
 const modeDescriptions: Record<string, string> = {
@@ -72,6 +76,9 @@ const modeDescriptions: Record<string, string> = {
     "High-quality, meticulously formatted exam & assignment solutions 🎓",
   "Lecture Slides":
     "Generate beautiful lecture slides — beginner-friendly, clear and visual 🎨",
+  "Generate Flashcards": "Generate optimized spaced-repetition flashcards 🗂️",
+  "Concept Map": "Generate hierarchical mind-maps of complex topics 🗺️",
+  "Adaptive Tutor": "An AI tutor that tests you and dynamically reinforces your weaknesses 🧠",
 };
 
 const modeGradients: Record<string, string> = {
@@ -83,6 +90,9 @@ const modeGradients: Record<string, string> = {
   "Practice Problems": "from-orange-500/20 to-amber-500/10",
   "Solve Exam/Assignment": "from-rose-500/20 to-red-500/10",
   "Lecture Slides": "from-sky-500/20 to-blue-500/10",
+  "Generate Flashcards": "from-indigo-500/20 to-blue-500/10",
+  "Concept Map": "from-fuchsia-500/20 to-pink-500/10",
+  "Adaptive Tutor": "from-cyan-500/20 to-indigo-500/10",
 };
 
 const modeIcons: Record<string, React.ReactNode> = {
@@ -107,6 +117,9 @@ const modeBorderColors: Record<string, string> = {
   "Practice Problems": "border-orange-500/30 hover:border-orange-400/50",
   "Solve Exam/Assignment": "border-rose-500/30 hover:border-rose-400/50",
   "Lecture Slides": "border-sky-500/30 hover:border-sky-400/50",
+  "Generate Flashcards": "border-indigo-500/30 hover:border-indigo-400/50",
+  "Concept Map": "border-fuchsia-500/30 hover:border-fuchsia-400/50",
+  "Adaptive Tutor": "border-cyan-500/30 hover:border-cyan-400/50",
 };
 
 const modeButtonColors: Record<string, string> = {
@@ -126,6 +139,12 @@ const modeButtonColors: Record<string, string> = {
     "from-rose-500 to-red-600 hover:from-rose-400 hover:to-red-500 shadow-rose-500/25",
   "Lecture Slides":
     "from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 shadow-sky-500/25",
+  "Generate Flashcards":
+    "from-indigo-500 to-blue-600 hover:from-indigo-400 hover:to-blue-500 shadow-indigo-500/25",
+  "Concept Map":
+    "from-fuchsia-500 to-pink-600 hover:from-fuchsia-400 hover:to-pink-500 shadow-fuchsia-500/25",
+  "Adaptive Tutor":
+    "from-cyan-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 shadow-cyan-500/25",
 };
 
 export default function MainArea({
@@ -140,6 +159,7 @@ export default function MainArea({
 }: MainAreaProps) {
   const [textInput, setTextInput] = useState("");
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [contextText, setContextText] = useState("");
   const [difficulty, setDifficulty] = useState("medium");
   const [copied, setCopied] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -229,6 +249,7 @@ export default function MainArea({
       }
 
       setOutput(data.output);
+      setContextText(data.extractedContent || textInput);
       setCurrentId(data.id);
       if (setDetails) {
         setDetails({ title: null, course: null, year: null, isSaved: false });
@@ -1068,8 +1089,9 @@ export default function MainArea({
                 <div className="h-4 bg-slate-800/60 rounded-lg w-2/3" />
               </div>
             ) : output ? (
-              /* Slide Viewer (for Lecture Slides mode) */
-              selectedMode === "Lecture Slides" && slides.length > 0 ? (
+              selectedMode === "Adaptive Tutor" ? (
+                <AdaptiveLearningArea diagnosticContent={output} contextText={contextText} />
+              ) : selectedMode === "Lecture Slides" && slides.length > 0 ? (
                 <div className="flex flex-col h-full">
                   {/* Slide Stage */}
                   <div className="flex-1 flex items-center justify-center p-4">
@@ -1088,10 +1110,11 @@ export default function MainArea({
                         <div className="flex flex-col gap-3 flex-1 overflow-y-auto">
                           {(() => {
                             const body = slides[currentSlide]?.body || "";
-                            const blocks:
+                            const blocks: Array<
                               | { type: "code"; lang: string; code: string }
                               | { type: "bullet"; text: string }
-                              | { type: "text"; text: string }[] = [];
+                              | { type: "text"; text: string }
+                            > = [];
 
                             // Parse the body into blocks
                             const lines = body.split("\n");

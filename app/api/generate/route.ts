@@ -85,6 +85,7 @@ export async function POST(req: NextRequest) {
       success: true,
       output,
       id: saved.id,
+      extractedContent,
     });
   } catch (error) {
     console.error("Generation error:", error);
