@@ -1,12 +1,17 @@
-export type StudyMode =
-  | "notes"
-  | "exam"
-  | "quiz"
-  | "summary"
-  | "code"
-  | "practice"
-  | "assignment"
-  | "slides";
+export const studyModes = [
+  "notes",
+  "exam",
+  "quiz",
+  "summary",
+  "code",
+  "practice",
+  "assignment",
+  "slides",
+  "flashcards",
+  "concept_map",
+] as const;
+
+export type StudyMode = typeof studyModes[number];
 
 export function buildPrompt(
   mode: StudyMode,
@@ -303,6 +308,8 @@ export function getModeTitle(mode: StudyMode): string {
     practice: "Practice Problems",
     assignment: "Solve Assignment",
     slides: "Lecture Slides",
+    flashcards: "Flashcards",
+    concept_map: "Concept Map",
   };
   return titles[mode] || mode;
 }
@@ -317,6 +324,8 @@ export function getModeEmoji(mode: StudyMode): string {
     practice: "🏋️",
     assignment: "🎓",
     slides: "🎨",
+    flashcards: "🗂️",
+    concept_map: "🗺️",
   };
   return emojis[mode] || "✨";
 }
