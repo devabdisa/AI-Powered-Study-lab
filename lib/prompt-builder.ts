@@ -13,6 +13,63 @@ export const studyModes = [
 
 export type StudyMode = typeof studyModes[number];
 
+export const BASE_RULES = `
+Core Rules:
+
+1. Do NOT invent information. Only use concepts present in the provided content.
+2. If the content is incomplete or unclear, state that the material does not contain enough information.
+3. Cover ALL major topics from the provided content.
+4. Never mention that you are an AI.
+5. Never say phrases like "based on the content provided".
+6. Write like a human instructor.
+7. Prefer bullet points over long paragraphs.
+8. Use clear Markdown formatting.
+`;
+
+export const TOPIC_EXTRACTION = `
+Step 1: Identify the main topics in the content.
+Step 2: Ensure every topic appears in the generated output.
+Step 3: Organize the output logically.
+`;
+
+export const DIFFICULTY_GUIDE = `
+Difficulty Levels:
+
+Easy:
+* definitions
+* simple recall
+* beginner examples
+
+Medium:
+* explanations
+* understanding
+* simple application
+
+Hard:
+* analysis
+* tricky scenarios
+* deeper reasoning
+`;
+
+export const LENGTH_CONTROL = `
+Length Guidelines:
+
+* Prefer short sections
+* Avoid long paragraphs
+* Use bullet points whenever possible
+* Be concise but complete
+`;
+
+export const LEARNING_OBJECTIVES = `
+## 🎯 Learning Objectives
+
+After studying this material, the student should be able to:
+
+* objective 1
+* objective 2
+* objective 3
+`;
+
 export function buildPrompt(
   mode: StudyMode,
   content: string,
