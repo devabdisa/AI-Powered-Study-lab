@@ -1280,6 +1280,8 @@ export default function MainArea({
                       "📝 Exam Questions",
                       "🎯 Quiz MCQs",
                       "⚡ Quick Summary",
+                      "🗂️ Generate Flashcards",
+                      "🧠 Adaptive Tutor",
                     ].map((tip) => (
                       <div
                         key={tip}

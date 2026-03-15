@@ -18,6 +18,9 @@ import {
   Bookmark,
   Loader2,
   Presentation,
+  Layers,
+  Network,
+  BrainCircuit,
 } from "lucide-react";
 
 interface SidebarProps {
@@ -97,6 +100,27 @@ const modes = [
     color: "text-sky-400",
     bg: "bg-sky-500/10 border-sky-500/40",
   },
+  {
+    label: "Generate Flashcards",
+    icon: Layers,
+    id: "flashcards",
+    color: "text-indigo-400",
+    bg: "bg-indigo-500/10 border-indigo-400/40",
+  },
+  {
+    label: "Concept Map",
+    icon: Network,
+    id: "concept_map",
+    color: "text-fuchsia-400",
+    bg: "bg-fuchsia-500/10 border-fuchsia-500/40",
+  },
+  {
+    label: "Adaptive Tutor",
+    icon: BrainCircuit,
+    id: "adaptive_learning",
+    color: "text-cyan-400",
+    bg: "bg-cyan-500/10 border-cyan-500/40",
+  },
 ];
 
 const modeColors: Record<string, string> = {
@@ -108,6 +132,9 @@ const modeColors: Record<string, string> = {
   practice: "text-orange-400",
   assignment: "text-rose-400",
   slides: "text-sky-400",
+  flashcards: "text-indigo-400",
+  concept_map: "text-fuchsia-400",
+  adaptive_learning: "text-cyan-400",
 };
 
 function timeAgo(dateStr: string): string {
