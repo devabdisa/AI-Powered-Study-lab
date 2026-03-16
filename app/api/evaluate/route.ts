@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
     // Build the heavily engineered prompt that locks the AI into JSON mode
     const prompt = buildEvaluationPrompt(content, userAnswers);
     
-    // Hit the specialized gemini-1.5-pro JSON endpoint
+    // Hit the specialized gemini-2.5-flash JSON endpoint
     const outputJSON = await generateJsonResponse(prompt);
 
     // Safely parse it out
