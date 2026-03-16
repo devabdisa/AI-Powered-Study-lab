@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { marked } from "marked";
+import MarkdownRenderer from "./MarkdownRenderer";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   FolderTree, FileCode2, ChevronRight, ChevronDown, 
@@ -252,10 +253,7 @@ export default function CodeExplainerUI({
                 exit={{ opacity: 0 }}
                 className="p-6 lg:p-8"
               >
-                <div 
-                  className="prose prose-invert max-w-none prose-headings:text-white prose-p:text-slate-300 prose-p:leading-relaxed prose-pre:bg-slate-900 prose-pre:border prose-pre:border-slate-800 prose-code:text-pink-400 prose-strong:text-white prose-li:text-slate-300"
-                  dangerouslySetInnerHTML={{ __html: marked.parse(rawOutput) as string }}
-                />
+                <MarkdownRenderer content={rawOutput} />
               </motion.div>
             ) : (
               <motion.div

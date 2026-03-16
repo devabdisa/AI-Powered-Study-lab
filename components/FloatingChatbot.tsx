@@ -4,6 +4,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MessageSquare, X, Send, Sparkles, User, Loader2, Maximize2, Minimize2, Trash2 } from "lucide-react";
 import { marked } from "marked";
+import MarkdownRenderer from "./MarkdownRenderer";
 
 interface Message {
   role: "user" | "ai";
@@ -206,10 +207,7 @@ export default function FloatingChatbot({ contextText }: FloatingChatbotProps) {
                     {msg.role === "user" ? (
                       <p className="whitespace-pre-wrap leading-relaxed">{msg.content}</p>
                     ) : (
-                      <div 
-                        className="prose prose-invert prose-sm max-w-none prose-p:leading-relaxed prose-pre:bg-slate-900 prose-pre:border prose-pre:border-slate-700"
-                        dangerouslySetInnerHTML={{ __html: marked.parse(msg.content) as string }}
-                      />
+                      <MarkdownRenderer content={msg.content} className="prose-sm" />
                     )}
                   </div>
                 </motion.div>

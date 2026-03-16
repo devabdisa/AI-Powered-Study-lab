@@ -38,6 +38,7 @@ import QuizUI from "./QuizUI";
 import ConceptMapUI from "./ConceptMapUI";
 import FloatingChatbot from "./FloatingChatbot";
 import CodeExplainerUI from "./CodeExplainerUI";
+import MarkdownRenderer from "./MarkdownRenderer";
 
 interface MainAreaProps {
   selectedMode: string;
@@ -1441,12 +1442,7 @@ export default function MainArea({
               ) : (
                 /* Regular Markdown Output */
                 <div ref={outputRef} className="bg-slate-950 p-2">
-                  <div
-                    className="markdown-output max-w-none text-sm"
-                    dangerouslySetInnerHTML={{
-                      __html: marked(output) as string,
-                    }}
-                  />
+                  <MarkdownRenderer content={output} className="text-sm" />
                 </div>
               )
             ) : (

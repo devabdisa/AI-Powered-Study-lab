@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { marked } from "marked";
+import MarkdownRenderer from "./MarkdownRenderer";
 import { motion, AnimatePresence } from "framer-motion";
 import { Loader2, BrainCircuit, RefreshCw, CheckCircle2, AlertTriangle, ChevronRight, XCircle } from "lucide-react";
 
@@ -354,10 +355,7 @@ export default function AdaptiveLearningArea({
             <h2 className="text-2xl font-black text-indigo-400 mb-6 flex items-center gap-2">
               <BrainCircuit /> Targeted Practice Lesson
             </h2>
-            <div 
-              className="prose prose-invert prose-indigo max-w-none prose-p:leading-relaxed" 
-              dangerouslySetInnerHTML={{ __html: marked.parse(reinforcementContent) as string }} 
-            />
+            <MarkdownRenderer content={reinforcementContent} />
           </div>
           
           <div className="flex justify-end pb-8">
