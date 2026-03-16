@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { generateContent } from "@/lib/gemini";
+import { generateContent, generateJsonResponse } from "@/lib/gemini";
 import { buildPrompt, StudyMode } from "@/lib/prompt-builder";
 import { prisma } from "@/lib/db";
 export const runtime = "nodejs";
@@ -63,8 +63,11 @@ export async function POST(req: NextRequest) {
     // Build the prompt
     const prompt = buildPrompt(mode, extractedContent, difficulty);
 
-    // Generate with Gemini
-    const output = await generateContent(prompt);
+    // Generate with Gemini based on output modality
+    const jsonModes = ["flashcards", "adaptive_learning", "quiz"]; // Concept map to be migrated later
+    const output = jsonModes.includes(mode) 
+      ? await generateJsonResponse(prompt) 
+      : await generateContent(prompt);
 
     // Save to database
     const saved = await prisma.generation.create({

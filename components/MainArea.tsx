@@ -31,6 +31,8 @@ import {
 } from "lucide-react";
 import { marked } from "marked";
 import AdaptiveLearningArea from "./AdaptiveLearningArea";
+import FlashcardsUI from "./FlashcardsUI";
+import QuizUI from "./QuizUI";
 
 interface MainAreaProps {
   selectedMode: string;
@@ -1091,6 +1093,10 @@ export default function MainArea({
             ) : output ? (
               selectedMode === "Adaptive Tutor" ? (
                 <AdaptiveLearningArea diagnosticContent={output} contextText={contextText} />
+              ) : selectedMode === "Generate Flashcards" ? (
+                <FlashcardsUI rawOutput={output} />
+              ) : selectedMode === "Generate Quiz" ? (
+                <QuizUI rawOutput={output} />
               ) : selectedMode === "Lecture Slides" && slides.length > 0 ? (
                 <div className="flex flex-col h-full">
                   {/* Slide Stage */}

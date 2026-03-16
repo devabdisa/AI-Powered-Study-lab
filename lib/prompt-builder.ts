@@ -153,24 +153,17 @@ Generate an interactive multiple choice quiz based on the content below.
 Difficulty: ${difficulty}
 Number of questions: 10
 
-Format each question exactly like this:
-
-**Q1.** [Question text]
-
-A) [option]
-B) [option]  
-C) [option]
-D) [option]
-
-<details>
-<summary>👀 <b>View Answer & Explanation</b></summary>
-
-✅ **Answer:** [Correct letter]) [Correct answer]
-💡 **Explanation:** [Brief explanation of why this is correct]
-
-</details>
-
----
+Return a RAW JSON object exactly matching this schema (do NOT wrap it in markdown block quotes like \`\`\`json, just return the raw curly braces):
+{
+  "questions": [
+    {
+      "q": "<Question text>",
+      "options": ["<Option A>", "<Option B>", "<Option C>", "<Option D>"],
+      "answer": "<The exact string of the correct option>",
+      "explanation": "<Brief explanation of why this is correct>"
+    }
+  ]
+}
 
 Make questions that test real understanding, not just memorization.
 Mix easy, medium, and hard questions based on the difficulty level.
@@ -362,12 +355,17 @@ ${BASE_RULES}
 
 ${TOPIC_EXTRACTION}
 
-Generate exactly 20 flashcards from the provided content to test recall and core understanding.
+Generate exactly 20 study flashcards from the provided content to test recall and core understanding.
 
-Format each flashcard exactly like this:
-
-**Front:** [Question or term]
-**Back:** [Answer or definition]
+Return a RAW JSON object exactly matching this schema (do NOT wrap it in markdown block quotes like \`\`\`json, just return the raw curly braces):
+{
+  "cards": [
+    {
+      "front": "<Question or conceptual term>",
+      "back": "<Answer or definition cleanly formatted>"
+    }
+  ]
+}
 
 Content:
 ${content}
@@ -396,23 +394,25 @@ ${content}
   adaptive_learning: (content) => `
 ${BASE_RULES}
 
-You are an expert, highly adaptive AI tutor. Your first task is to evaluate the provided content and generate a diagnostic quiz to assess the student's baseline knowledge.
+You are an expert, highly adaptive AI tutor. Evaluate the provided content and generate a diagnostic multiple-choice quiz to assess the student's baseline knowledge.
 
 Generate exactly 8 diagnostic questions. The questions should cover:
 - Conceptual understanding
 - Practical application
 - Tricky edge cases
 
-Format the questions strictly like this (no answers, just the questions):
-
-**Q1.** [Question text here]
-A) [option]
-B) [option]
-C) [option]
-D) [option]
-
-**Q2.** [Question text here]
-...
+Return a RAW JSON object exactly matching this schema (do NOT wrap it in markdown block quotes like \`\`\`json):
+{
+  "questions": [
+    {
+      "q": "<Question text>",
+      "options": ["<A>", "<B>", "<C>", "<D>"],
+      "answer": "<The exact string of the correct option>",
+      "explanation": "<Why this is correct and others are wrong>",
+      "topic": "<A 2-3 word summary of the specific topic this question tests (e.g. 'Photosynthesis' or 'Newton's First Law')>"
+    }
+  ]
+}
 
 Content:
 ${content}
