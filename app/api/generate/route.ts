@@ -64,7 +64,7 @@ export async function POST(req: NextRequest) {
     const prompt = buildPrompt(mode, extractedContent, difficulty);
 
     // Generate with Gemini based on output modality
-    const jsonModes = ["flashcards", "adaptive_learning", "quiz"]; // Concept map to be migrated later
+    const jsonModes = ["flashcards", "adaptive_learning", "quiz", "concept_map"];
     const output = jsonModes.includes(mode) 
       ? await generateJsonResponse(prompt) 
       : await generateContent(prompt);

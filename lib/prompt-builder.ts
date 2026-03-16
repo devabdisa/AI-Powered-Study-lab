@@ -376,16 +376,23 @@ ${BASE_RULES}
 
 ${TOPIC_EXTRACTION}
 
-Generate a clear hierarchical concept map of the provided content.
+Generate a clear, deeply nested hierarchical concept map of the provided content.
 
-Format as a text-based tree structure:
+Return a RAW JSON object exactly matching this schema (do NOT wrap it in markdown block quotes like \`\`\`json):
+{
+  "name": "<Root Topic (e.g. Physics)>",
+  "children": [
+    {
+      "name": "<Sub-topic (e.g. Kinematics)>",
+      "children": [
+        { "name": "<Specific Concept>" },
+        { "name": "<Another Concept>" }
+      ]
+    }
+  ]
+}
 
-Concept
-├ Subconcept
-├ Subconcept
-└ Example
-
-Ensure all major topics are distinctly captured and visually nested.
+Ensure all major concepts are distinctly captured and visually nested up to 4 levels deep if necessary. Provide at least 15-20 nodes in total spread across the branches.
 
 Content:
 ${content}

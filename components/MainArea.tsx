@@ -33,6 +33,7 @@ import { marked } from "marked";
 import AdaptiveLearningArea from "./AdaptiveLearningArea";
 import FlashcardsUI from "./FlashcardsUI";
 import QuizUI from "./QuizUI";
+import ConceptMapUI from "./ConceptMapUI";
 
 interface MainAreaProps {
   selectedMode: string;
@@ -1097,6 +1098,8 @@ export default function MainArea({
                 <FlashcardsUI rawOutput={output} />
               ) : selectedMode === "Generate Quiz" ? (
                 <QuizUI rawOutput={output} />
+              ) : selectedMode === "Concept Map" ? (
+                <ConceptMapUI rawOutput={output} />
               ) : selectedMode === "Lecture Slides" && slides.length > 0 ? (
                 <div className="flex flex-col h-full">
                   {/* Slide Stage */}
