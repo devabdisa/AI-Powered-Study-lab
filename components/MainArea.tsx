@@ -28,6 +28,8 @@ import {
   ChevronLeft,
   ChevronRight,
   MonitorPlay,
+  FolderOpen,
+  Trash2,
 } from "lucide-react";
 import { marked } from "marked";
 import AdaptiveLearningArea from "./AdaptiveLearningArea";
@@ -35,6 +37,7 @@ import FlashcardsUI from "./FlashcardsUI";
 import QuizUI from "./QuizUI";
 import ConceptMapUI from "./ConceptMapUI";
 import FloatingChatbot from "./FloatingChatbot";
+import CodeExplainerUI from "./CodeExplainerUI";
 
 interface MainAreaProps {
   selectedMode: string;
@@ -182,6 +185,57 @@ export default function MainArea({
   const [slides, setSlides] = useState<{ title: string; body: string }[]>([]);
   const [currentSlide, setCurrentSlide] = useState(0);
 
+  // Code Explainer multi-file upload state
+  const [uploadedCodeFiles, setUploadedCodeFiles] = useState<{ path: string; content: string }[]>([]);
+  const [isReadingFiles, setIsReadingFiles] = useState(false);
+  const folderInputRef = useRef<HTMLInputElement>(null);
+  const multiFileInputRef = useRef<HTMLInputElement>(null);
+
+  const CODE_EXTENSIONS = new Set([
+    "ts", "tsx", "js", "jsx", "py", "java", "css", "scss", "html",
+    "json", "yml", "yaml", "md", "prisma", "sql", "graphql", "env",
+    "toml", "cfg", "ini", "sh", "bash", "dockerfile", "xml",
+    "go", "rs", "c", "cpp", "h", "hpp", "rb", "php", "swift", "kt",
+  ]);
+
+  const IGNORE_DIRS = new Set([
+    "node_modules", ".git", ".next", "dist", "build", ".cache",
+    "__pycache__", ".vscode", ".idea", "coverage", ".turbo",
+  ]);
+
+  const handleCodeFilesUpload = async (files: FileList) => {
+    setIsReadingFiles(true);
+    setError(null);
+    const results: { path: string; content: string }[] = [];
+
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      const relativePath = file.webkitRelativePath || file.name;
+
+      // Skip ignored directories
+      const pathParts = relativePath.split("/");
+      if (pathParts.some(part => IGNORE_DIRS.has(part))) continue;
+
+      // Only accept code / config files
+      const ext = file.name.split(".").pop()?.toLowerCase() || "";
+      const isNoExt = !file.name.includes("."); // Dockerfile, Makefile, etc.
+      if (!CODE_EXTENSIONS.has(ext) && !isNoExt) continue;
+
+      // Skip very large files (> 100KB)
+      if (file.size > 100 * 1024) continue;
+
+      try {
+        const content = await file.text();
+        results.push({ path: relativePath, content });
+      } catch (e) {
+        console.warn(`Skipped unreadable file: ${relativePath}`);
+      }
+    }
+
+    setUploadedCodeFiles(prev => [...prev, ...results]);
+    setIsReadingFiles(false);
+  };
+
   // Re-parse slides whenever output or mode changes (fixes library load)
   useEffect(() => {
     if (selectedMode === "Lecture Slides" && output) {
@@ -225,8 +279,12 @@ export default function MainArea({
   const handleDragLeave = () => setIsDragging(false);
 
   const handleProcess = async () => {
-    if (!textInput.trim() && !uploadedFile) {
-      setError("Please provide text or upload a PDF file.");
+    // For Explain Code mode, check code files OR text/PDF
+    const isCodeMode = selectedMode === "Explain Code";
+    const hasCodeFiles = uploadedCodeFiles.length > 0;
+
+    if (!textInput.trim() && !uploadedFile && !hasCodeFiles) {
+      setError(isCodeMode ? "Please upload a folder, files, or paste code." : "Please provide text or upload a PDF file.");
       return;
     }
     setIsProcessing(true);
@@ -238,8 +296,22 @@ export default function MainArea({
       const formData = new FormData();
       formData.append("mode", modeMap[selectedMode] || "notes");
       formData.append("difficulty", difficulty);
-      if (textInput.trim()) formData.append("textInput", textInput.trim());
-      if (uploadedFile) formData.append("file", uploadedFile);
+
+      // Build combined codebase context if code files are uploaded
+      if (isCodeMode && hasCodeFiles) {
+        const codebaseContext = uploadedCodeFiles
+          .map(f => `--- FILE: ${f.path} ---\n${f.content}`)
+          .join("\n\n");
+        
+        const fullInput = textInput.trim()
+          ? `[User Instructions]:\n${textInput.trim()}\n\n[Codebase Files (${uploadedCodeFiles.length} files)]:\n${codebaseContext}`
+          : `[Codebase Files (${uploadedCodeFiles.length} files)]:\n${codebaseContext}`;
+        
+        formData.append("textInput", fullInput);
+      } else {
+        if (textInput.trim()) formData.append("textInput", textInput.trim());
+        if (uploadedFile) formData.append("file", uploadedFile);
+      }
 
       const res = await fetch("/api/generate", {
         method: "POST",
@@ -743,72 +815,176 @@ export default function MainArea({
         <div className="w-80 border-r border-slate-800 flex flex-col gap-4 p-5 overflow-y-auto bg-slate-900/30">
           {/* File Upload Zone */}
           <div>
-            <label className="text-[11px] font-semibold text-slate-400 uppercase tracking-widest mb-2 block">
-              Upload PDF
-            </label>
-            <div
-              onDrop={handleDrop}
-              onDragOver={handleDragOver}
-              onDragLeave={handleDragLeave}
-              className={`relative rounded-xl border-2 border-dashed transition-all duration-200 cursor-pointer ${
-                isDragging
-                  ? "border-cyan-400 bg-cyan-500/10"
-                  : uploadedFile
-                    ? "border-emerald-500/50 bg-emerald-500/5"
-                    : `${borderColor} bg-slate-900/50 hover:bg-slate-800/50`
-              }`}
-              onClick={() => fileInputRef.current?.click()}
-            >
-              <input
-                ref={fileInputRef}
-                type="file"
-                onChange={(e) =>
-                  e.target.files?.[0] && handleFileUpload(e.target.files[0])
-                }
-                className="hidden"
-                accept=".pdf"
-              />
-              <div className="flex flex-col items-center justify-center gap-2 py-6 px-4">
-                {uploadedFile ? (
-                  <>
-                    <div className="w-10 h-10 bg-emerald-500/20 rounded-xl flex items-center justify-center">
-                      <FileText size={20} className="text-emerald-400" />
+            {selectedMode === "Explain Code" ? (
+              <>
+                <label className="text-[11px] font-semibold text-slate-400 uppercase tracking-widest mb-2 block">
+                  Upload Project Folder or Files
+                </label>
+
+                {/* Hidden inputs for folder and multi-file */}
+                <input
+                  ref={folderInputRef}
+                  type="file"
+                  onChange={(e) => e.target.files && handleCodeFilesUpload(e.target.files)}
+                  className="hidden"
+                  {...({ webkitdirectory: "", directory: "" } as React.InputHTMLAttributes<HTMLInputElement>)}
+                  multiple
+                />
+                <input
+                  ref={multiFileInputRef}
+                  type="file"
+                  onChange={(e) => e.target.files && handleCodeFilesUpload(e.target.files)}
+                  className="hidden"
+                  multiple
+                  accept=".ts,.tsx,.js,.jsx,.py,.java,.css,.scss,.html,.json,.yml,.yaml,.md,.prisma,.sql,.go,.rs,.c,.cpp,.rb,.php,.swift,.kt"
+                />
+
+                {uploadedCodeFiles.length > 0 ? (
+                  <div className="rounded-xl border-2 border-pink-500/30 bg-pink-500/5 p-3">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-2">
+                        <FolderOpen size={16} className="text-pink-400" />
+                        <span className="text-sm font-bold text-pink-300">{uploadedCodeFiles.length} files loaded</span>
+                      </div>
+                      <button
+                        onClick={() => setUploadedCodeFiles([])}
+                        className="text-xs text-slate-500 hover:text-red-400 flex items-center gap-1 transition-colors"
+                      >
+                        <Trash2 size={12} /> Clear
+                      </button>
                     </div>
-                    <div className="text-center">
-                      <p className="text-sm font-semibold text-emerald-400 truncate max-w-[180px]">
-                        {uploadedFile.name}
-                      </p>
-                      <p className="text-xs text-slate-500 mt-0.5">
-                        {(uploadedFile.size / 1024 / 1024).toFixed(2)} MB
-                      </p>
+                    <div className="max-h-[160px] overflow-y-auto space-y-1 scrollbar-thin scrollbar-thumb-slate-700">
+                      {uploadedCodeFiles.map((f, i) => (
+                        <div key={i} className="text-xs text-slate-400 font-mono truncate px-2 py-1 bg-slate-900/60 rounded-lg">
+                          {f.path}
+                        </div>
+                      ))}
                     </div>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setUploadedFile(null);
-                      }}
-                      className="text-xs text-slate-500 hover:text-red-400 flex items-center gap-1 transition-colors mt-1"
-                    >
-                      <X size={12} /> Remove
-                    </button>
-                  </>
+                    {/* Add More */}
+                    <div className="flex gap-2 mt-3">
+                      <button
+                        onClick={() => folderInputRef.current?.click()}
+                        className="flex-1 text-xs py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium transition-colors border border-slate-700"
+                      >
+                        + Add Folder
+                      </button>
+                      <button
+                        onClick={() => multiFileInputRef.current?.click()}
+                        className="flex-1 text-xs py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium transition-colors border border-slate-700"
+                      >
+                        + Add Files
+                      </button>
+                    </div>
+                  </div>
                 ) : (
-                  <>
-                    <div className="w-10 h-10 bg-slate-800 rounded-xl flex items-center justify-center">
-                      <Upload size={18} className="text-slate-400" />
-                    </div>
-                    <div className="text-center">
-                      <p className="text-sm font-medium text-slate-300">
-                        {isDragging ? "Drop it here!" : "Drop PDF here"}
-                      </p>
-                      <p className="text-xs text-slate-500 mt-0.5">
-                        or click to browse • Max 20MB
-                      </p>
-                    </div>
-                  </>
+                  <div className="space-y-2">
+                    <button
+                      onClick={() => folderInputRef.current?.click()}
+                      disabled={isReadingFiles}
+                      className={`w-full relative rounded-xl border-2 border-dashed transition-all duration-200 cursor-pointer ${borderColor} bg-slate-900/50 hover:bg-slate-800/50`}
+                    >
+                      <div className="flex flex-col items-center justify-center gap-2 py-5 px-4">
+                        {isReadingFiles ? (
+                          <Loader2 size={20} className="text-pink-400 animate-spin" />
+                        ) : (
+                          <div className="w-10 h-10 bg-pink-500/10 rounded-xl flex items-center justify-center">
+                            <FolderOpen size={20} className="text-pink-400" />
+                          </div>
+                        )}
+                        <div className="text-center">
+                          <p className="text-sm font-medium text-slate-300">
+                            {isReadingFiles ? "Reading files..." : "Upload Entire Folder"}
+                          </p>
+                          <p className="text-xs text-slate-500 mt-0.5">
+                            Auto-filters node_modules, .git, etc.
+                          </p>
+                        </div>
+                      </div>
+                    </button>
+                    <button
+                      onClick={() => multiFileInputRef.current?.click()}
+                      className={`w-full relative rounded-xl border-2 border-dashed transition-all duration-200 cursor-pointer ${borderColor} bg-slate-900/50 hover:bg-slate-800/50`}
+                    >
+                      <div className="flex flex-col items-center justify-center gap-1.5 py-4 px-4">
+                        <div className="w-8 h-8 bg-slate-800 rounded-lg flex items-center justify-center">
+                          <Code2 size={16} className="text-slate-400" />
+                        </div>
+                        <p className="text-xs font-medium text-slate-400">Or select individual files</p>
+                      </div>
+                    </button>
+                  </div>
                 )}
-              </div>
-            </div>
+              </>
+            ) : (
+              <>
+                <label className="text-[11px] font-semibold text-slate-400 uppercase tracking-widest mb-2 block">
+                  Upload PDF
+                </label>
+                <div
+                  onDrop={handleDrop}
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                  className={`relative rounded-xl border-2 border-dashed transition-all duration-200 cursor-pointer ${
+                    isDragging
+                      ? "border-cyan-400 bg-cyan-500/10"
+                      : uploadedFile
+                        ? "border-emerald-500/50 bg-emerald-500/5"
+                        : `${borderColor} bg-slate-900/50 hover:bg-slate-800/50`
+                  }`}
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    onChange={(e) =>
+                      e.target.files?.[0] && handleFileUpload(e.target.files[0])
+                    }
+                    className="hidden"
+                    accept=".pdf"
+                  />
+                  <div className="flex flex-col items-center justify-center gap-2 py-6 px-4">
+                    {uploadedFile ? (
+                      <>
+                        <div className="w-10 h-10 bg-emerald-500/20 rounded-xl flex items-center justify-center">
+                          <FileText size={20} className="text-emerald-400" />
+                        </div>
+                        <div className="text-center">
+                          <p className="text-sm font-semibold text-emerald-400 truncate max-w-[180px]">
+                            {uploadedFile.name}
+                          </p>
+                          <p className="text-xs text-slate-500 mt-0.5">
+                            {(uploadedFile.size / 1024 / 1024).toFixed(2)} MB
+                          </p>
+                        </div>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setUploadedFile(null);
+                          }}
+                          className="text-xs text-slate-500 hover:text-red-400 flex items-center gap-1 transition-colors mt-1"
+                        >
+                          <X size={12} /> Remove
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <div className="w-10 h-10 bg-slate-800 rounded-xl flex items-center justify-center">
+                          <Upload size={18} className="text-slate-400" />
+                        </div>
+                        <div className="text-center">
+                          <p className="text-sm font-medium text-slate-300">
+                            {isDragging ? "Drop it here!" : "Drop PDF here"}
+                          </p>
+                          <p className="text-xs text-slate-500 mt-0.5">
+                            or click to browse • Max 20MB
+                          </p>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </div>
+              </>
+            )}
           </div>
 
           {/* Divider */}
@@ -823,7 +999,9 @@ export default function MainArea({
             <label className="text-[11px] font-semibold text-slate-400 uppercase tracking-widest mb-2 block">
               {selectedMode === "Solve Assignment"
                 ? "Paste Guidelines / Rubric"
-                : "Paste Text / Notes"}
+                : selectedMode === "Explain Code"
+                  ? "Paste Code or Ask a Question"
+                  : "Paste Text / Notes"}
             </label>
             <textarea
               value={textInput}
@@ -831,7 +1009,9 @@ export default function MainArea({
               placeholder={
                 selectedMode === "Solve Assignment"
                   ? "Paste your exact assignment instructions, grading rubric, or formatting requirements here..."
-                  : "Paste your lecture notes, textbook content, code, or any study material here..."
+                  : selectedMode === "Explain Code"
+                    ? "Paste code here, or type a question like 'explain the routing flow' after uploading a folder..."
+                    : "Paste your lecture notes, textbook content, code, or any study material here..."
               }
               className={`flex-1 min-h-[140px] bg-slate-900/60 border rounded-xl p-4 text-sm text-slate-100 placeholder-slate-600 resize-none focus:outline-none transition-all ${borderColor} focus:ring-1 focus:ring-cyan-500/30`}
             />
@@ -1101,6 +1281,8 @@ export default function MainArea({
                 <QuizUI rawOutput={output} />
               ) : selectedMode === "Concept Map" ? (
                 <ConceptMapUI rawOutput={output} />
+              ) : selectedMode === "Explain Code" && uploadedCodeFiles.length > 0 ? (
+                <CodeExplainerUI rawOutput={output} files={uploadedCodeFiles} />
               ) : selectedMode === "Lecture Slides" && slides.length > 0 ? (
                 <div className="flex flex-col h-full">
                   {/* Slide Stage */}
