@@ -34,6 +34,7 @@ import AdaptiveLearningArea from "./AdaptiveLearningArea";
 import FlashcardsUI from "./FlashcardsUI";
 import QuizUI from "./QuizUI";
 import ConceptMapUI from "./ConceptMapUI";
+import FloatingChatbot from "./FloatingChatbot";
 
 interface MainAreaProps {
   selectedMode: string;
@@ -1306,6 +1307,10 @@ export default function MainArea({
           </div>
         </div>
       </div>
+      
+      {/* Dynamic Context-Aware Chatbot */}
+      <FloatingChatbot contextText={contextText} />
+
     </main>
   );
 }
