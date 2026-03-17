@@ -792,7 +792,7 @@ export default function MainArea({
     "from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 shadow-cyan-500/25";
 
   return (
-    <main className="flex-1 flex flex-col bg-slate-950 overflow-hidden">
+    <main className="flex-1 flex flex-col min-h-0 bg-slate-950 overflow-hidden">
       {/* Header */}
       <header
         className={`border-b border-slate-800 bg-gradient-to-r ${gradient} backdrop-blur-sm px-8 py-5`}

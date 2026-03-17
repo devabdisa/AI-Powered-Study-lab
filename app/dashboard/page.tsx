@@ -63,7 +63,7 @@ export default function DashboardPage() {
         onLoadHistory={handleLoadHistory}
         refreshTrigger={refreshHistory}
       />
-      <div className="flex-1 overflow-hidden relative">
+      <div className="flex-1 flex flex-col overflow-hidden relative">
         {selectedMode === "Library Dashboard" ? (
           <LibraryDashboard 
             refreshTrigger={refreshHistory} 

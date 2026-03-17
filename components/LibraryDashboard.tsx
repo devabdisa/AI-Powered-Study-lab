@@ -135,14 +135,14 @@ export default function LibraryDashboard({
 
   if (loading) {
     return (
-      <div className="h-full flex items-center justify-center bg-slate-950">
+      <div className="flex-1 flex items-center justify-center min-h-0 bg-slate-950">
         <Loader2 className="w-8 h-8 text-cyan-400 animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col h-full bg-slate-950 overflow-hidden">
+    <div className="flex-1 flex flex-col min-h-0 bg-slate-950 overflow-hidden">
       {/* Header */}
       <div className="shrink-0 border-b border-slate-800 bg-slate-900/50 p-6 md:p-8">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row md:items-end justify-between gap-6">
