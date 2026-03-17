@@ -275,6 +275,14 @@ export default function Sidebar({
         ) : (
           /* History List */
           <div className="space-y-4">
+            <button
+              onClick={() => onSelectMode("Library Dashboard")}
+              className="w-full flex items-center justify-center gap-2 px-3 py-3 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-bold transition-all shadow-[0_0_15px_rgba(6,182,212,0.3)] hover:scale-[1.02] active:scale-[0.98]"
+            >
+              <Library size={16} />
+              Open Full Library
+            </button>
+
             {loadingHistory ? (
               <div className="flex items-center justify-center py-8">
                 <div className="w-5 h-5 border-2 border-cyan-500 border-t-transparent rounded-full animate-spin" />

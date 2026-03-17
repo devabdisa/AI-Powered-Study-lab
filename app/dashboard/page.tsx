@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Sidebar from "@/components/Sidebar";
 import MainArea from "@/components/MainArea";
+import LibraryDashboard from "@/components/LibraryDashboard";
 
 export default function DashboardPage() {
   const [selectedMode, setSelectedMode] = useState<string>("Generate Notes");
@@ -53,23 +54,34 @@ export default function DashboardPage() {
         selectedMode={selectedMode}
         onSelectMode={(mode) => {
           setSelectedMode(mode);
-          setOutput("");
-          setCurrentId(null);
-          setDetails({ title: null, course: null, year: null, isSaved: false });
+          if (mode !== "Library Dashboard") {
+            setOutput("");
+            setCurrentId(null);
+            setDetails({ title: null, course: null, year: null, isSaved: false });
+          }
         }}
         onLoadHistory={handleLoadHistory}
         refreshTrigger={refreshHistory}
       />
-      <MainArea
-        selectedMode={selectedMode}
-        output={output}
-        setOutput={setOutput}
-        currentId={currentId}
-        setCurrentId={setCurrentId}
-        details={details}
-        setDetails={setDetails}
-        onSaveSuccess={() => setRefreshHistory((prev) => prev + 1)}
-      />
+      <div className="flex-1 overflow-hidden relative">
+        {selectedMode === "Library Dashboard" ? (
+          <LibraryDashboard 
+            refreshTrigger={refreshHistory} 
+            onLoadItem={handleLoadHistory} 
+          />
+        ) : (
+          <MainArea
+            selectedMode={selectedMode}
+            output={output}
+            setOutput={setOutput}
+            currentId={currentId}
+            setCurrentId={setCurrentId}
+            details={details}
+            setDetails={setDetails}
+            onSaveSuccess={() => setRefreshHistory((prev) => prev + 1)}
+          />
+        )}
+      </div>
     </div>
   );
 }
