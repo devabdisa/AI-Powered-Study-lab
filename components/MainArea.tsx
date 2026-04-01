@@ -253,8 +253,11 @@ export default function MainArea({
   const outputRef = useRef<HTMLDivElement>(null);
 
   const handleFileUpload = (file: File) => {
-    if (!file.name.toLowerCase().endsWith(".pdf")) {
-      setError("Only PDF files are supported.");
+    const allowedExtensions = [".pdf", ".docx", ".pptx", ".txt", ".md"];
+    const fileExt = file.name.slice(file.name.lastIndexOf(".")).toLowerCase();
+
+    if (!allowedExtensions.includes(fileExt)) {
+      setError(`Invalid file type. Supported: ${allowedExtensions.join(", ")}`);
       return;
     }
     if (file.size > 20 * 1024 * 1024) {
@@ -919,7 +922,7 @@ export default function MainArea({
             ) : (
               <>
                 <label className="text-[11px] font-semibold text-slate-400 uppercase tracking-widest mb-2 block">
-                  Upload PDF
+                  Upload PDF, PPTX, or DOCX 
                 </label>
                 <div
                   onDrop={handleDrop}
@@ -941,7 +944,7 @@ export default function MainArea({
                       e.target.files?.[0] && handleFileUpload(e.target.files[0])
                     }
                     className="hidden"
-                    accept=".pdf"
+                    accept=".pdf,.pptx,.docx,.txt,.md"
                   />
                   <div className="flex flex-col items-center justify-center gap-2 py-6 px-4">
                     {uploadedFile ? (
@@ -974,10 +977,10 @@ export default function MainArea({
                         </div>
                         <div className="text-center">
                           <p className="text-sm font-medium text-slate-300">
-                            {isDragging ? "Drop it here!" : "Drop PDF here"}
+                            {isDragging ? "Drop it here!" : "Drop lecture files here"}
                           </p>
                           <p className="text-xs text-slate-500 mt-0.5">
-                            or click to browse • Max 20MB
+                            PDF, PPTX, DOCX, TXT • Max 20MB
                           </p>
                         </div>
                       </>

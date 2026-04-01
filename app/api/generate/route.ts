@@ -21,35 +21,50 @@ export async function POST(req: NextRequest) {
     let fileUsed = false;
     let fileName: string | undefined;
 
-    // Handle PDF file upload
     if (file && file.size > 0) {
       fileUsed = true;
       fileName = file.name;
-
+      const fileExt = fileName.slice(fileName.lastIndexOf(".")).toLowerCase();
       const arrayBuffer = await file.arrayBuffer();
       const buffer = Buffer.from(arrayBuffer);
+      let parsedText = "";
 
-      // Extract text from PDF buffer
-      const pdfParse = require("pdf-parse");
-      const pdfData = await pdfParse(buffer);
+      try {
+        if (fileExt === ".pdf") {
+          const pdfParse = require("pdf-parse");
+          const pdfData = await pdfParse(buffer);
+          parsedText = pdfData.text;
+        } else if (fileExt === ".docx") {
+          const mammoth = require("mammoth");
+          const mResult = await mammoth.extractRawText({ buffer: buffer });
+          parsedText = mResult.value;
+        } else if (fileExt === ".pptx") {
+          const officeparser = require("officeparser");
+          const pptxText = await new Promise<string>((resolve, reject) => {
+            officeparser.parseOffice(buffer, (data: any, err: any) => {
+              if (err) reject(err);
+              else resolve(data);
+            });
+          });
+          parsedText = pptxText;
+        } else if (fileExt === ".txt" || fileExt === ".md") {
+          parsedText = buffer.toString("utf-8");
+        }
 
-      const parsedText = pdfData.text;
+        if (!parsedText || (!parsedText.trim() && fileExt !== ".pptx")) {
+           throw new Error(`Could not extract text from the ${fileExt.toUpperCase()} file.`);
+        }
 
-      if (!parsedText || parsedText.trim().length < 10) {
+        if (textInput.trim()) {
+          extractedContent = `[Attached Document (${fileExt.toUpperCase()})]:\n${parsedText}\n\n[User Guidelines / Instructions]:\n${textInput.trim()}`;
+        } else {
+          extractedContent = parsedText;
+        }
+      } catch (err) {
         return NextResponse.json(
-          {
-            error:
-              "Could not extract text from the PDF. Please try a text-based PDF.",
-          },
-          { status: 400 },
+          { error: err instanceof Error ? err.message : "File parsing failed" },
+          { status: 400 }
         );
-      }
-
-      // If they also typed something in the text box (like an assignment guideline)
-      if (textInput.trim()) {
-        extractedContent = `[Attached PDF Document]:\n${parsedText}\n\n[User Guidelines / Instructions]:\n${textInput.trim()}`;
-      } else {
-        extractedContent = parsedText;
       }
     }
 
