@@ -20,3 +20,42 @@ model Generation {
   fileName   String?
   createdAt  DateTime @default(now())
 }
+
+model LectureDecodeJob {
+  id             String              @id @default(cuid())
+  title          String?
+  sourceType     String
+  status         String              @default("queued")
+  normalizedText String
+  sourceDigest   String?
+  subjectLabel   String?
+  metadata       Json?
+  finalArtifact  Json?
+  mergedMarkdown String?
+  errorMessage   String?
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+  chunks         LectureChunkResult[]
+}
+
+model LectureChunkResult {
+  id             String           @id @default(cuid())
+  jobId          String
+  chunkIndex     Int
+  sectionTitle   String?
+  sourceType     String
+  pageStart      Int?
+  pageEnd        Int?
+  status         String           @default("pending")
+  attempts       Int              @default(0)
+  rawModelOutput String?
+  decoded        Json?
+  errorMessage   String?
+  isComplete     Boolean          @default(false)
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  job            LectureDecodeJob @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@unique([jobId, chunkIndex])
+  @@index([jobId, status])
+}

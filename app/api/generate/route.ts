@@ -1,5 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { generateContent, generateJsonResponse } from "@/lib/gemini";
+import {
+  generateContent,
+  generateContentByProvider,
+  generateJsonResponse,
+  generateJsonResponseByProvider,
+} from "@/lib/gemini";
 import { buildPrompt, StudyMode } from "@/lib/prompt-builder";
 import { prisma } from "@/lib/db";
 export const runtime = "nodejs";
@@ -39,14 +44,29 @@ export async function POST(req: NextRequest) {
           const mResult = await mammoth.extractRawText({ buffer: buffer });
           parsedText = mResult.value;
         } else if (fileExt === ".pptx") {
-          const officeparser = require("officeparser");
-          const pptxText = await new Promise<string>((resolve, reject) => {
-            officeparser.parseOffice(buffer, (data: any, err: any) => {
-              if (err) reject(err);
-              else resolve(data);
+          try {
+            const dynamicRequire = eval("require") as NodeJS.Require;
+            const officeparserModuleName = ["office", "parser"].join("");
+            const officeparser = dynamicRequire(officeparserModuleName) as {
+              parseOffice(
+                input: Buffer,
+                callback: (data: string, err: Error | null) => void,
+              ): void;
+            };
+            const pptxText = await new Promise<string>((resolve, reject) => {
+              officeparser.parseOffice(buffer, (data: string, err: Error | null) => {
+                if (err) reject(err);
+                else resolve(data);
+              });
             });
-          });
-          parsedText = pptxText;
+            parsedText = pptxText;
+          } catch (error) {
+            throw new Error(
+              `PPTX parsing failed in this server build. Please paste slide text for now. ${
+                error instanceof Error ? error.message : ""
+              }`.trim(),
+            );
+          }
         } else if (fileExt === ".txt" || fileExt === ".md") {
           parsedText = buffer.toString("utf-8");
         }
@@ -80,9 +100,17 @@ export async function POST(req: NextRequest) {
 
     // Generate with Gemini based on output modality
     const jsonModes = ["flashcards", "adaptive_learning", "quiz", "concept_map"];
-    const output = jsonModes.includes(mode) 
-      ? await generateJsonResponse(prompt) 
-      : await generateContent(prompt);
+    const legacyProvider =
+      (process.env.LEGACY_LLM_PROVIDER as "gemini" | "deepseek" | undefined) ??
+      "gemini";
+
+    const output = jsonModes.includes(mode)
+      ? legacyProvider
+        ? await generateJsonResponseByProvider(prompt, legacyProvider)
+        : await generateJsonResponse(prompt)
+      : legacyProvider
+        ? await generateContentByProvider(prompt, legacyProvider)
+        : await generateContent(prompt);
 
     // Save to database
     const saved = await prisma.generation.create({

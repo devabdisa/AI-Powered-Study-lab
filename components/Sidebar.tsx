@@ -45,6 +45,13 @@ interface HistoryItem {
 
 const modes = [
   {
+    label: "Lecture Decoder",
+    icon: BrainCircuit,
+    id: "lecture_decoder_v2",
+    color: "text-cyan-300",
+    bg: "bg-cyan-500/15 border-cyan-400/50",
+  },
+  {
     label: "Generate Notes",
     icon: FileText,
     id: "notes",
@@ -124,6 +131,7 @@ const modes = [
 ];
 
 const modeColors: Record<string, string> = {
+  lecture_decoder_v2: "text-cyan-300",
   notes: "text-cyan-400",
   exam: "text-violet-400",
   quiz: "text-amber-400",
@@ -264,6 +272,9 @@ export default function Sidebar({
                   />
                   <span className="text-sm font-medium flex-1 text-left">
                     {mode.label}
+                    {mode.id !== "lecture_decoder_v2" && (
+                      <span className="ml-2 text-[10px] text-slate-500">legacy</span>
+                    )}
                   </span>
                   {isActive && (
                     <ChevronRight size={14} className={mode.color} />
@@ -309,10 +320,13 @@ export default function Sidebar({
                       {history
                         .filter((h) => h.isSaved)
                         .map((item) => (
-                          <button
+                          <div
                             key={item.id}
+                            role="button"
+                            tabIndex={0}
                             onClick={() => onLoadHistory(item.id)}
-                            className="w-full text-left px-3 py-2.5 rounded-xl bg-slate-800/80 hover:bg-slate-700 border border-slate-700/50 hover:border-cyan-500/30 transition-all group"
+                            onKeyDown={(e) => e.key === "Enter" && onLoadHistory(item.id)}
+                            className="w-full text-left px-3 py-2.5 rounded-xl bg-slate-800/80 hover:bg-slate-700 border border-slate-700/50 hover:border-cyan-500/30 transition-all group cursor-pointer"
                           >
                             <div className="flex items-start justify-between gap-2">
                               <div className="min-w-0 flex-1">
@@ -360,7 +374,7 @@ export default function Sidebar({
                                 )}
                               </button>
                             </div>
-                          </button>
+                          </div>
                         ))}
                     </div>
                   </div>
@@ -383,10 +397,13 @@ export default function Sidebar({
                       {history
                         .filter((h) => !h.isSaved)
                         .map((item) => (
-                          <button
+                          <div
                             key={item.id}
+                            role="button"
+                            tabIndex={0}
                             onClick={() => onLoadHistory(item.id)}
-                            className="w-full text-left px-3 py-2.5 rounded-xl bg-slate-800/30 hover:bg-slate-800/80 border border-transparent hover:border-slate-700/50 transition-all group"
+                            onKeyDown={(e) => e.key === "Enter" && onLoadHistory(item.id)}
+                            className="w-full text-left px-3 py-2.5 rounded-xl bg-slate-800/30 hover:bg-slate-800/80 border border-transparent hover:border-slate-700/50 transition-all group cursor-pointer"
                           >
                             <div className="flex items-start justify-between gap-2">
                               <div className="min-w-0 flex-1">
@@ -420,7 +437,7 @@ export default function Sidebar({
                                 )}
                               </button>
                             </div>
-                          </button>
+                          </div>
                         ))}
                     </div>
                   </div>

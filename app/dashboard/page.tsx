@@ -4,11 +4,27 @@ import { useState } from "react";
 import Sidebar from "@/components/Sidebar";
 import MainArea from "@/components/MainArea";
 import LibraryDashboard from "@/components/LibraryDashboard";
+import LectureDecoderStudio from "@/components/LectureDecoderStudio";
+
+interface DecoderHistoryPayload {
+  jobId: string;
+  status: "completed" | "partial" | "failed";
+  subjectLabel: "technical" | "general" | "mixed";
+  artifact: unknown;
+  views: {
+    learn: string;
+    revise: string;
+    test: string;
+    deepDive: string;
+  } | null;
+}
 
 export default function DashboardPage() {
-  const [selectedMode, setSelectedMode] = useState<string>("Generate Notes");
+  const [selectedMode, setSelectedMode] = useState<string>("Lecture Decoder");
   const [output, setOutput] = useState<string>("");
   const [currentId, setCurrentId] = useState<string | null>(null);
+  const [decoderPayload, setDecoderPayload] =
+    useState<DecoderHistoryPayload | null>(null);
   const [details, setDetails] = useState<{
     title: string | null;
     course: string | null;
@@ -24,6 +40,7 @@ export default function DashboardPage() {
       if (data.generation) {
         // Map mode id back to label
         const modeLabels: Record<string, string> = {
+          lecture_decoder_v2: "Lecture Decoder",
           notes: "Generate Notes",
           exam: "Generate Exam",
           quiz: "Generate Quiz",
@@ -34,7 +51,35 @@ export default function DashboardPage() {
           slides: "Lecture Slides",
         };
         setSelectedMode(modeLabels[data.generation.mode] || "Generate Notes");
-        setOutput(data.generation.output);
+        if (data.generation.mode === "lecture_decoder_v2") {
+          try {
+            const parsed = JSON.parse(data.generation.output) as Partial<DecoderHistoryPayload>;
+            if (
+              parsed &&
+              typeof parsed.jobId === "string" &&
+              typeof parsed.status === "string" &&
+              typeof parsed.subjectLabel === "string"
+            ) {
+              setDecoderPayload({
+                jobId: parsed.jobId,
+                status: parsed.status as DecoderHistoryPayload["status"],
+                subjectLabel:
+                  parsed.subjectLabel as DecoderHistoryPayload["subjectLabel"],
+                artifact: parsed.artifact ?? null,
+                views: parsed.views ?? null,
+              });
+            } else {
+              setDecoderPayload(null);
+            }
+            setOutput("");
+          } catch {
+            setDecoderPayload(null);
+            setOutput(data.generation.output);
+          }
+        } else {
+          setDecoderPayload(null);
+          setOutput(data.generation.output);
+        }
         setCurrentId(data.generation.id);
         setDetails({
           title: data.generation.title,
@@ -55,6 +100,9 @@ export default function DashboardPage() {
         onSelectMode={(mode) => {
           setSelectedMode(mode);
           if (mode !== "Library Dashboard") {
+            if (mode !== "Lecture Decoder") {
+              setDecoderPayload(null);
+            }
             setOutput("");
             setCurrentId(null);
             setDetails({ title: null, course: null, year: null, isSaved: false });
@@ -68,6 +116,11 @@ export default function DashboardPage() {
           <LibraryDashboard 
             refreshTrigger={refreshHistory} 
             onLoadItem={handleLoadHistory} 
+          />
+        ) : selectedMode === "Lecture Decoder" ? (
+          <LectureDecoderStudio
+            initialPayload={decoderPayload}
+            onSaveSuccess={() => setRefreshHistory((prev) => prev + 1)}
           />
         ) : (
           <MainArea
