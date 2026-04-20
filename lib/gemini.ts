@@ -215,7 +215,7 @@ async function generateWithDeepSeek(params: {
     let timeout: ReturnType<typeof setTimeout> | null = null;
     try {
       const controller = new AbortController();
-      timeout = setTimeout(() => controller.abort(), 45000);
+      timeout = setTimeout(() => controller.abort(), 120000);
       const res = await fetch(endpoint, {
         method: "POST",
         headers: {
